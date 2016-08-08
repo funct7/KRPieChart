@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0337234B1D582A9D00831A83 /* KRPieChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0337234A1D582A9D00831A83 /* KRPieChart.swift */; };
 		55061F2D0EAA034394FF93874E70E9EB /* Pods-KRPieChart_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C41C9D7EFB1F49B8F01EAF4B157DD95B /* Pods-KRPieChart_Example-dummy.m */; };
 		7FC5C9CA0D0F8497B545A39EC1ECA7B0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
 		990800A648B8741B3EDA09A9E3563E16 /* Pods-KRPieChart_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63470DC30C5E33D475411A2A14A20B9F /* Pods-KRPieChart_Tests-dummy.m */; };
@@ -15,8 +14,9 @@
 		9FAC067C10E530FE833E21DCF4C2C393 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
 		A78B2D385B4DC1C91EE0FFFED348527D /* Pods-KRPieChart_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 1279D4237CD191CE7F3A8E834C39D77A /* Pods-KRPieChart_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CFCB38E351E392509E68C4B758D94BD6 /* KRPieChart-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 086AAA2B512CE41A7732A94DD4BA0560 /* KRPieChart-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DC8D3E60B20B5E59D5982B126A93190D /* KRPieChart-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CBD5667AF718B2809F88F71371ECC67 /* KRPieChart-dummy.m */; };
 		F0FC8C022351DFB1721E411FD99DC0DC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
-		F3C32BCBA33BA222770F4893CEA7EA09 /* KRPieChart-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CBD5667AF718B2809F88F71371ECC67 /* KRPieChart-dummy.m */; };
+		FBF23AEED07A38C90A95B3D08A682204 /* KRPieChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DADB8D16391354E9294A4E068E7F84A /* KRPieChart.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,12 +30,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0337234A1D582A9D00831A83 /* KRPieChart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KRPieChart.swift; sourceTree = "<group>"; };
 		0576CEBEC7A90974D3A44F464820D35C /* Pods-KRPieChart_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-KRPieChart_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
 		086AAA2B512CE41A7732A94DD4BA0560 /* KRPieChart-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "KRPieChart-umbrella.h"; sourceTree = "<group>"; };
 		092DB2B3B5A616D7D50368111B4D543C /* KRPieChart-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "KRPieChart-prefix.pch"; sourceTree = "<group>"; };
 		1279D4237CD191CE7F3A8E834C39D77A /* Pods-KRPieChart_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-KRPieChart_Example-umbrella.h"; sourceTree = "<group>"; };
 		2FE9EAB1220EA1651D0155C50CE18ACB /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3DADB8D16391354E9294A4E068E7F84A /* KRPieChart.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KRPieChart.swift; sourceTree = "<group>"; };
 		466ED06079F9AA933037AE65EC463E78 /* Pods-KRPieChart_Tests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-KRPieChart_Tests-resources.sh"; sourceTree = "<group>"; };
 		4CBD5667AF718B2809F88F71371ECC67 /* KRPieChart-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "KRPieChart-dummy.m"; sourceTree = "<group>"; };
 		5A51FD13BAC49FAEF5E5F46966E904CF /* Pods-KRPieChart_Example-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-KRPieChart_Example-resources.sh"; sourceTree = "<group>"; };
@@ -110,10 +110,10 @@
 			path = "Target Support Files/Pods-KRPieChart_Tests";
 			sourceTree = "<group>";
 		};
-		1311378282FEDD697282ED9D1646DFD6 /* Classes */ = {
+		08057DE5AD48192C67931DB84FF103C3 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				0337234A1D582A9D00831A83 /* KRPieChart.swift */,
+				3DADB8D16391354E9294A4E068E7F84A /* KRPieChart.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -217,7 +217,7 @@
 		F51543059DDB3303252D24913CD21CA6 /* KRPieChart */ = {
 			isa = PBXGroup;
 			children = (
-				1311378282FEDD697282ED9D1646DFD6 /* Classes */,
+				08057DE5AD48192C67931DB84FF103C3 /* Classes */,
 			);
 			path = KRPieChart;
 			sourceTree = "<group>";
@@ -273,7 +273,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A9908DCF186CE7A633A2C80266BF32C4 /* Build configuration list for PBXNativeTarget "KRPieChart" */;
 			buildPhases = (
-				15FD7BF69484E8EE9382E8CDD4C2677C /* Sources */,
+				AD49D76F67397609936DC6474C5D6190 /* Sources */,
 				93484B5E59AB328493B215F7A5CB6C6B /* Frameworks */,
 				C408178AA07E1D4B73A5918B541F9E28 /* Headers */,
 			);
@@ -333,20 +333,20 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		15FD7BF69484E8EE9382E8CDD4C2677C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0337234B1D582A9D00831A83 /* KRPieChart.swift in Sources */,
-				F3C32BCBA33BA222770F4893CEA7EA09 /* KRPieChart-dummy.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		39CF61DEB33864005CED8C9F482553D2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				990800A648B8741B3EDA09A9E3563E16 /* Pods-KRPieChart_Tests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD49D76F67397609936DC6474C5D6190 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC8D3E60B20B5E59D5982B126A93190D /* KRPieChart-dummy.m in Sources */,
+				FBF23AEED07A38C90A95B3D08A682204 /* KRPieChart.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,7 +445,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7CA22A8EA814214E1CD3BF3F18361876 /* KRPieChart.xcconfig */;
 			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -584,7 +583,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7CA22A8EA814214E1CD3BF3F18361876 /* KRPieChart.xcconfig */;
 			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";

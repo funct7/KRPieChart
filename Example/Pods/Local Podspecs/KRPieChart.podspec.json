@@ -1,18 +1,18 @@
 {
   "name": "KRPieChart",
   "version": "0.1.0",
-  "summary": "A short description of KRPieChart.",
-  "description": "TODO: Add long description of the pod here.",
-  "homepage": "https://github.com/<GITHUB_USERNAME>/KRPieChart",
+  "summary": "KRPieChart is a light-weight pie chart library.",
+  "description": "`KRPieChart` is a light-weight library, allowing users to draw a pie chart with only a few property settings.",
+  "homepage": "https://github.com/BridgeTheGap/KRPieChart",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
   },
   "authors": {
-    "Joshua Park": "joshuaparkwm@gmail.com"
+    "Josh Woomin Park": "wmpark@knowre.com"
   },
   "source": {
-    "git": "https://github.com/<GITHUB_USERNAME>/KRPieChart.git",
+    "git": "https://github.com/BridgeTheGap/KRPieChart.git",
     "tag": "0.1.0"
   },
   "platforms": {
