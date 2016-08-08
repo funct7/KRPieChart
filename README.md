@@ -22,7 +22,7 @@ pod "KRPieChart"
 
 ## Author
 
-Joshua Park, joshuaparkwm@gmail.com
+Josh Woomin Park, wmpark@knowre.com
 
 ## License
 
