@@ -1,0 +1,6 @@
+framework module KRPieChart {
+  umbrella header "KRPieChart-umbrella.h"
+
+  export *
+  module * { export * }
+}

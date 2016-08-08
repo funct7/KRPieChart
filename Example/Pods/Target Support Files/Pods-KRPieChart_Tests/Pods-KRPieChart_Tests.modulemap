@@ -1,0 +1,6 @@
+framework module Pods_KRPieChart_Tests {
+  umbrella header "Pods-KRPieChart_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}
