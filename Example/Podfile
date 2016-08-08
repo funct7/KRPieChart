@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'KRPieChart_Example' do
+  pod 'KRPieChart', :path => '../'
+
+  target 'KRPieChart_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
