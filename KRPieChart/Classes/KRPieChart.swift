@@ -27,7 +27,7 @@ public class KRPieChart: UIView {
     public var insets = UIEdgeInsetsZero
     public var segmentBorderColor = UIColor.clearColor()
     public var segmentBorderWidth = CGFloat(0.0)
-    public var animateClockWise: Bool = true
+    public var clockWise: Bool = true
     
     public func setSegments(segments: [CGFloat], colors: [UIColor]) {
         assert(segments.count == colors.count, "The number of elements in `segments` and `colors` must be the same.")
@@ -45,25 +45,36 @@ public class KRPieChart: UIView {
         let frame = CGRectMake(insets.left, insets.top, width, height)
         let radius = width / 2.0
         let center = CGPointMake(frame.midX, frame.midY)
-        var startAngle: CGFloat = CGFloat(1.5 * M_PI)
+        var startAngle = CGFloat(1.5 * M_PI)
         
         for i in 0 ..< segments.count {
-            let layer = CAShapeLayer()
+            let layer = CALayer()
+            layer.frame = frame
             layer.name = LAYER_ID_SEGMENT
             
             let endAngle = startAngle + segments[i] * CGFloat(M_PI * 2)
             let path = UIBezierPath()
             path.moveToPoint(center.getPointFromRadius(radius, angle: startAngle))
-            path.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: animateClockWise)
+            path.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: clockWise)
             path.addLineToPoint(center.getPointFromRadius(innerRadius, angle: endAngle))
-            path.addArcWithCenter(center, radius: innerRadius, startAngle: endAngle, endAngle: startAngle, clockwise: !animateClockWise)
+            path.addArcWithCenter(center, radius: innerRadius, startAngle: endAngle, endAngle: startAngle, clockwise: !clockWise)
             path.addLineToPoint(center.getPointFromRadius(radius, angle: startAngle))
             
-            layer.fillColor = colors[i].CGColor
-            layer.strokeColor = segmentBorderColor.CGColor
-            layer.lineWidth = segmentBorderWidth
+            let size = CGSizeMake(width, height)
+            UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+            let ctx = UIGraphicsGetCurrentContext()
             
-            layer.path = path.CGPath
+            CGContextAddPath(ctx, path.CGPath)
+            CGContextSetFillColorWithColor(ctx, colors[i].CGColor)
+            CGContextSetLineWidth(ctx, segmentBorderWidth)
+            CGContextSetStrokeColorWithColor(ctx, segmentBorderColor.CGColor)
+            CGContextFillPath(ctx)
+            CGContextStrokePath(ctx)
+            
+            let image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            layer.contents = image.CGImage
             
             self.layer.addSublayer(layer)
             startAngle = endAngle
@@ -71,6 +82,7 @@ public class KRPieChart: UIView {
     }
     
     // TODO: Implement
-    //    public func animateWithDuration(duration: Double, style: KRPieChartAnimationStyle, completion: (() -> Void)?) {
-    //    }
+    public func animateWithDuration(duration: Double, style: KRPieChartAnimationStyle, completion: (() -> Void)?) {
+        
+    }
 }
