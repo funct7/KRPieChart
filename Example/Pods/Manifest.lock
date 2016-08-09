@@ -1,5 +1,7 @@
 PODS:
-  - KRPieChart (0.1.0)
+  - KRPieChart (0.2.0):
+    - KRTimingFunction
+  - KRTimingFunction (0.9.1)
 
 DEPENDENCIES:
   - KRPieChart (from `../`)
@@ -9,7 +11,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  KRPieChart: d0b3ef7d7cd18ac02312c1e1924ef0e5af50d665
+  KRPieChart: 95e6716510c803595a4a96e0724dba282da7f6ec
+  KRTimingFunction: 78e502786e657c880a890b675633a766a54240a0
 
 PODFILE CHECKSUM: f74b300300895b165d0bd900454775026e6f9e1c
 
