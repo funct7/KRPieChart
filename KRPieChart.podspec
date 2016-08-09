@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'KRPieChart'
-  s.version          = '0.3.0'
+  s.version          = '0.3.1'
   s.summary          = 'KRPieChart is a light-weight pie chart library.'
 
 # This description is used to generate tags and improve search results.
