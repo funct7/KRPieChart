@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import KRTimingFunction
 
 extension CGPoint {
     func getPointFromRadius(radius: CGFloat, angle: CGFloat) -> CGPoint {
@@ -43,7 +44,11 @@ public class KRPieChart: UIView {
         assert(width == height, "Width and height don't match.\n1. Check bounds: \(bounds).\n2. Check insets: \(insets).\n3. Ensure that `bounds.width - (horizontal insets)` == `bounds.height - (vertical insets)`")
         
         let frame = CGRectMake(insets.left, insets.top, width, height)
-        let radius = width / 2.0
+        let radius = width / 2.0 - (segmentBorderWidth / 2.0)
+        let innerRadius = self.innerRadius + (segmentBorderWidth / 2.0)
+        
+        assert(radius > innerRadius, "Inner radius (\(innerRadius)) cannot be bigger than the outer radius (\(radius)).")
+        
         let center = CGPointMake(frame.midX, frame.midY)
         var startAngle = CGFloat(1.5 * M_PI)
         
@@ -59,6 +64,7 @@ public class KRPieChart: UIView {
             path.addLineToPoint(center.getPointFromRadius(innerRadius, angle: endAngle))
             path.addArcWithCenter(center, radius: innerRadius, startAngle: endAngle, endAngle: startAngle, clockwise: !clockWise)
             path.addLineToPoint(center.getPointFromRadius(radius, angle: startAngle))
+            path.lineWidth = segmentBorderWidth
             
             let size = CGSizeMake(width, height)
             UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
@@ -68,8 +74,7 @@ public class KRPieChart: UIView {
             CGContextSetFillColorWithColor(ctx, colors[i].CGColor)
             CGContextSetLineWidth(ctx, segmentBorderWidth)
             CGContextSetStrokeColorWithColor(ctx, segmentBorderColor.CGColor)
-            CGContextFillPath(ctx)
-            CGContextStrokePath(ctx)
+            CGContextDrawPath(ctx, .FillStroke)
             
             let image = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
@@ -83,6 +88,10 @@ public class KRPieChart: UIView {
     
     // TODO: Implement
     public func animateWithDuration(duration: Double, style: KRPieChartAnimationStyle, completion: (() -> Void)?) {
-        
+        if style == .Sequential {
+            
+        } else {
+            
+        }
     }
 }
