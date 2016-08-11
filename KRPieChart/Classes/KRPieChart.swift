@@ -74,9 +74,9 @@ public class KRPieChart: UIView {
     public var insets = UIEdgeInsetsZero
     public var segmentBorderColor = UIColor.clearColor()
     public var segmentBorderWidth = CGFloat(0.0)
-    public var clockwise: Bool = true
     
     private var _segmentLayers: [CALayer]!
+    private let drawingQueue = dispatch_queue_create("com.krpiechart.drawing_queue", DISPATCH_QUEUE_SERIAL)
     
     public func setSegments(segments: [CGFloat], colors: [UIColor]) {
         dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
@@ -156,59 +156,58 @@ public class KRPieChart: UIView {
         }
     }
     
-    // TODO: Implement
     public func animateWithDuration(duration: Double, style: KRPieChartAnimationStyle, function: AnimationFunction = .EaseInOutCubic, completion: (() -> Void)?) {
-        dispatch_async(dispatch_get_main_queue()) {
+        dispatch_async(self.drawingQueue) {
             switch style {
             case .SequentialCW, .SequentialCCW:
                 var imageGraph: UIImage!
                 var values = [CGImage]()
-                dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-                    let tempView = UIView(frame: self.bounds)
-                    for sublayer in self._segmentLayers { tempView.layer.addSublayer(sublayer) }
+                let tempView = UIView(frame: self.bounds)
+                for sublayer in self._segmentLayers { tempView.layer.addSublayer(sublayer) }
+                
+                UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
+                var ctx = UIGraphicsGetCurrentContext()
+                tempView.layer.renderInContext(ctx!)
+                imageGraph = UIGraphicsGetImageFromCurrentImageContext()
+                UIGraphicsEndImageContext()
+                
+                UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
+                ctx = UIGraphicsGetCurrentContext()
+                
+                let numberOfFrames = CGFloat(60.0 * duration)
+                
+                let center = CGPointMake(self.bounds.midX, self.bounds.midY)
+                let radius = (self.bounds.width - (self.insets.left + self.insets.right)) / 2.0
+                let startAngle = CGFloat(1.5 * M_PI)
+                let startPoint = CGPointMake(center.x, 0.0)
+                
+                for i in 0 ... Int(numberOfFrames) {
+                    CGContextSaveGState(ctx)
+                    let relativeTime = getComputedTime(function, relativeTime: CGFloat(i) / numberOfFrames, duration: duration)
+                    let endAngle = style == .SequentialCW ? startAngle + relativeTime * CGFloat(M_PI * 2) : startAngle - relativeTime * CGFloat(M_PI * 2)
                     
-                    UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
-                    var ctx = UIGraphicsGetCurrentContext()
-                    tempView.drawViewHierarchyInRect(self.bounds, afterScreenUpdates: true)
-                    imageGraph = UIGraphicsGetImageFromCurrentImageContext()
-                    UIGraphicsEndImageContext()
+                    let path = UIBezierPath()
+                    path.moveToPoint(startPoint)
+                    path.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: style == .SequentialCW)
+                    path.addLineToPoint(center)
+                    path.addLineToPoint(startPoint)
+                    path.closePath()
                     
-                    UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
-                    ctx = UIGraphicsGetCurrentContext()
+                    CGContextAddPath(ctx, path.CGPath)
+                    CGContextClip(ctx)
+                    CGContextTranslateCTM(ctx, 0.0, self.bounds.height)
+                    CGContextScaleCTM(ctx, 1.0, -1.0)
+                    CGContextDrawImage(ctx, self.bounds, imageGraph.CGImage)
                     
-                    let numberOfFrames = CGFloat(60.0 * duration)
-                    
-                    let center = CGPointMake(self.bounds.midX, self.bounds.midY)
-                    let radius = (self.bounds.width - (self.insets.left + self.insets.right)) / 2.0
-                    let startAngle = CGFloat(1.5 * M_PI)
-                    let startPoint = CGPointMake(center.x, 0.0)
-                    
-                    for i in 0 ... Int(numberOfFrames) {
-                        CGContextSaveGState(ctx)
-                        let relativeTime = getComputedTime(function, relativeTime: CGFloat(i) / numberOfFrames, duration: duration)
-                        let endAngle = self.clockwise ? startAngle + relativeTime * CGFloat(M_PI * 2) : startAngle - relativeTime * CGFloat(M_PI * 2)
-                        
-                        let path = UIBezierPath()
-                        path.moveToPoint(startPoint)
-                        path.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: self.clockwise)
-                        path.addLineToPoint(center)
-                        path.addLineToPoint(startPoint)
-                        path.closePath()
-                        
-                        CGContextAddPath(ctx, path.CGPath)
-                        CGContextClip(ctx)
-                        imageGraph.drawInRect(self.bounds)
-                        
-                        guard let animImage = UIGraphicsGetImageFromCurrentImageContext().CGImage else {
-                            print("Failed to get a image of pie chart. Check \(#file) \(#line)")
-                            return
-                        }
-                        values.append(animImage)
-                        CGContextRestoreGState(ctx)
+                    guard let animImage = UIGraphicsGetImageFromCurrentImageContext().CGImage else {
+                        print("Failed to get a image of pie chart. Check \(#file) \(#line)")
+                        return
                     }
-                    
-                    UIGraphicsEndImageContext()
+                    values.append(animImage)
+                    CGContextRestoreGState(ctx)
                 }
+                
+                UIGraphicsEndImageContext()
                 
                 dispatch_async(dispatch_get_main_queue()) {
                     CATransaction.begin()
@@ -229,7 +228,9 @@ public class KRPieChart: UIView {
                 }
             default: break
             }
-        }    }
+        }
+        
+    }
 }
 
 private func getComputedTime(function: AnimationFunction, relativeTime: CGFloat, duration: Double) -> CGFloat {

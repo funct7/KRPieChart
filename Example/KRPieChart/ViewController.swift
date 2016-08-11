@@ -24,7 +24,6 @@ class ViewController: UIViewController {
     }
     
     @IBAction func fillAction(sender: AnyObject) {
-        viewBox.clockwise = false
         viewBox.innerRadius = 50.0
         viewBox.setSegments([0.35, 0.25, 0.2, 0.2], colors: [UIColor.redColor(), UIColor.greenColor(), UIColor.blueColor(), UIColor.grayColor()])
         viewBox.animateWithDuration(1.0, style: .SequentialCCW) {
