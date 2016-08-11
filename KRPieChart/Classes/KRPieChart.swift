@@ -79,7 +79,7 @@ public class KRPieChart: UIView {
     private let drawingQueue = dispatch_queue_create("com.krpiechart.drawing_queue", DISPATCH_QUEUE_SERIAL)
     
     public func setSegments(segments: [CGFloat], colors: [UIColor]) {
-        dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+        dispatch_async(self.drawingQueue) {
             assert(segments.count == colors.count, "The number of elements in `segments` and `colors` must be the same.")
             assert(round(segments.reduce(CGFloat(0.0), combine: +)*10.0) / 10.0 == CGFloat(1.0), "The sum of elements in `segments` must be 1.0: \(segments.reduce(CGFloat(0.0), combine: +))")
             
@@ -139,20 +139,26 @@ public class KRPieChart: UIView {
     }
     
     public func displayChart() {
-        dispatch_async(dispatch_get_main_queue()) {
-            for segmentLayer in self._segmentLayers { self.layer.addSublayer(segmentLayer) }
+        dispatch_async(self.drawingQueue) {
+            dispatch_async(dispatch_get_main_queue()) {
+                for segmentLayer in self._segmentLayers { self.layer.addSublayer(segmentLayer) }
+            }
         }
     }
     
     public func hideChart() {
-        dispatch_async(dispatch_get_main_queue()) {
-            for segmentLayer in self._segmentLayers { segmentLayer.hidden = true }
+        dispatch_async(self.drawingQueue) {
+            dispatch_async(dispatch_get_main_queue()) {
+                for segmentLayer in self._segmentLayers { segmentLayer.hidden = true }
+            }
         }
     }
     
     public func removeChart() {
-        dispatch_async(dispatch_get_main_queue()) {
-            for segmentLayer in self._segmentLayers { segmentLayer.removeFromSuperlayer() }
+        dispatch_async(self.drawingQueue) {
+            dispatch_async(dispatch_get_main_queue()) {
+                for segmentLayer in self._segmentLayers { segmentLayer.removeFromSuperlayer() }
+            }
         }
     }
     
