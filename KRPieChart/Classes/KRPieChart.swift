@@ -219,6 +219,7 @@ public class KRPieChart: UIView {
                     CATransaction.begin()
                     CATransaction.setCompletionBlock({
                         self.displayChart()
+                        self.layer.removeAnimationForKey("contents")
                         completion?()
                     })
                     
