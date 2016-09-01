@@ -215,18 +215,19 @@ public class KRPieChart: UIView {
                 
                 UIGraphicsEndImageContext()
                 
+                let anim = CAKeyframeAnimation(keyPath: "contents")
+                anim.duration = duration
+                anim.values = values
+                anim.fillMode = kCAFillModeForwards
+                anim.removedOnCompletion = false
+                
                 dispatch_async(dispatch_get_main_queue()) {
                     CATransaction.begin()
                     CATransaction.setCompletionBlock({
-                        self.displayChart()
+                        for segmentLayer in self._segmentLayers { self.layer.addSublayer(segmentLayer) }
+                        self.layer.removeAnimationForKey("contents")
                         completion?()
                     })
-                    
-                    let anim = CAKeyframeAnimation(keyPath: "contents")
-                    anim.duration = duration
-                    anim.values = values
-                    anim.fillMode = kCAFillModeForwards
-                    anim.removedOnCompletion = false
                     
                     self.layer.addAnimation(anim, forKey: "contents")
                     

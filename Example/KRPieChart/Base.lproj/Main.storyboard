@@ -27,7 +27,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xSc-2v-YgG">
-                                <rect key="frame" x="277" y="525" width="46" height="30"/>
+                                <rect key="frame" x="277" y="442" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="fillAction:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="01I-eH-xxJ"/>
@@ -36,7 +36,7 @@
                         </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="xSc-2v-YgG" firstAttribute="top" secondItem="kzd-Vd-CVK" secondAttribute="bottom" constant="105" id="13F-Wr-mWf"/>
+                            <constraint firstItem="xSc-2v-YgG" firstAttribute="top" secondItem="kzd-Vd-CVK" secondAttribute="bottom" constant="22" id="13F-Wr-mWf"/>
                             <constraint firstItem="kzd-Vd-CVK" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="7tk-2E-c9f"/>
                             <constraint firstItem="kzd-Vd-CVK" firstAttribute="centerY" secondItem="kh9-bI-dsS" secondAttribute="centerY" id="Sbq-Kv-vJf"/>
                             <constraint firstItem="xSc-2v-YgG" firstAttribute="centerX" secondItem="kzd-Vd-CVK" secondAttribute="centerX" id="Z4f-Dx-ZP8"/>
