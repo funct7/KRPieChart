@@ -10,78 +10,78 @@ import UIKit
 import KRTimingFunction
 
 extension CGPoint {
-    func getPointFromRadius(radius: CGFloat, angle: CGFloat) -> CGPoint {
-        return CGPointMake(x + radius * cos(angle), y + radius * sin(angle))
+    func getPointFrom(radius: CGFloat, angle: CGFloat) -> CGPoint {
+        return CGPoint(x: x + radius * cos(angle), y: y + radius * sin(angle))
     }
 }
 
 public enum KRPieChartAnimationStyle {
-    case SequentialCW
-    case SequentialCCW
-    case SimultaneousCW
-    case SimultaneousCCW
+    case sequentialCW
+    case sequentialCCW
+    case simultaneousCW
+    case simultaneousCCW
 }
 
 public enum AnimationFunction {
-    case Linear
+    case linear
     
-    case EaseInSine
-    case EaseOutSine
-    case EaseInOutSine
+    case easeInSine
+    case easeOutSine
+    case easeInOutSine
     
-    case EaseInQuad
-    case EaseOutQuad
-    case EaseInOutQuad
+    case easeInQuad
+    case easeOutQuad
+    case easeInOutQuad
     
-    case EaseInCubic
-    case EaseOutCubic
-    case EaseInOutCubic
+    case easeInCubic
+    case easeOutCubic
+    case easeInOutCubic
     
-    case EaseInQuart
-    case EaseOutQuart
-    case EaseInOutQuart
+    case easeInQuart
+    case easeOutQuart
+    case easeInOutQuart
     
-    case EaseInQuint
-    case EaseOutQuint
-    case EaseInOutQuint
+    case easeInQuint
+    case easeOutQuint
+    case easeInOutQuint
     
-    case EaseInExpo
-    case EaseOutExpo
-    case EaseInOutExpo
+    case easeInExpo
+    case easeOutExpo
+    case easeInOutExpo
     
-    case EaseInCirc
-    case EaseOutCirc
-    case EaseInOutCirc
+    case easeInCirc
+    case easeOutCirc
+    case easeInOutCirc
     
-    case EaseInBack
-    case EaseOutBack
-    case EaseInOutBack
+    case easeInBack
+    case easeOutBack
+    case easeInOutBack
     
-    case EaseInElastic
-    case EaseOutElastic
-    case EaseInOutElastic
+    case easeInElastic
+    case easeOutElastic
+    case easeInOutElastic
     
-    case EaseInBounce
-    case EaseOutBounce
-    case EaseInOutBounce
+    case easeInBounce
+    case easeOutBounce
+    case easeInOutBounce
 }
 
 private let LAYER_ID_SEGMENT = "KRPieSegment"
 
-public class KRPieChart: UIView {
-    public var innerRadius: CGFloat = 0.0
+open class KRPieChart: UIView {
+    open var innerRadius: CGFloat = 0.0
     
-    public var insets = UIEdgeInsetsZero
-    public var segmentBorderColor = UIColor.clearColor()
-    public var segmentBorderWidth = CGFloat(0.0)
+    open var insets = UIEdgeInsets.zero
+    open var segmentBorderColor = UIColor.clear
+    open var segmentBorderWidth = CGFloat(0.0)
     
-    private var _segmentLayers: [CALayer]!
-    private let drawingQueue = dispatch_queue_create("com.krpiechart.drawing_queue", DISPATCH_QUEUE_SERIAL)
+    fileprivate var _segmentLayers: [CALayer]!
+    fileprivate let drawingQueue = DispatchQueue(label: "com.krpiechart.drawing_queue", attributes: [])
     
-    public func setSegments(segments: [CGFloat], colors: [UIColor]) {
-        dispatch_async(self.drawingQueue) {
+    open func setSegments(_ segments: [CGFloat], colors: [UIColor]) {
+        self.drawingQueue.async {
             assert(segments.count == colors.count, "The number of elements in `segments` and `colors` must be the same.")
-            assert(round(segments.reduce(CGFloat(0.0), combine: +)*10.0) / 10.0 == CGFloat(1.0), "The sum of elements in `segments` must be 1.0: \(segments.reduce(CGFloat(0.0), combine: +))")
+            assert(round(segments.reduce(CGFloat(0.0), +)*10.0) / 10.0 == CGFloat(1.0), "The sum of elements in `segments` must be 1.0: \(segments.reduce(CGFloat(0.0), +))")
             
             if let sublayers = self.layer.sublayers {
                 for layer in sublayers { if layer.name == LAYER_ID_SEGMENT { layer.removeFromSuperlayer() } }
@@ -92,7 +92,7 @@ public class KRPieChart: UIView {
             
             assert(width == height, "Width and height don't match.\n1. Check bounds: \(self.bounds).\n2. Check insets: \(self.insets).\n3. Ensure that `bounds.width - (horizontal insets)` == `bounds.height - (vertical insets)`")
             
-            let frame = CGRectMake(self.insets.left, self.insets.top, width, height)
+            let frame = CGRect(x: self.insets.left, y: self.insets.top, width: width, height: height)
             let radius = width / 2.0 - (self.segmentBorderWidth / 2.0)
             let innerRadius = self.innerRadius + (self.segmentBorderWidth / 2.0)
             
@@ -100,7 +100,7 @@ public class KRPieChart: UIView {
             
             self._segmentLayers = [CALayer]()
             
-            let center = CGPointMake(frame.midX, frame.midY)
+            let center = CGPoint(x: frame.midX, y: frame.midY)
             var startAngle = CGFloat(1.5 * M_PI)
             
             for i in 0 ..< segments.count {
@@ -110,27 +110,27 @@ public class KRPieChart: UIView {
                 
                 let endAngle = startAngle + segments[i] * CGFloat(M_PI * 2)
                 let path = UIBezierPath()
-                path.moveToPoint(center.getPointFromRadius(radius, angle: startAngle))
-                path.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
-                path.addLineToPoint(center.getPointFromRadius(innerRadius, angle: endAngle))
-                path.addArcWithCenter(center, radius: innerRadius, startAngle: endAngle, endAngle: startAngle, clockwise: false)
-                path.addLineToPoint(center.getPointFromRadius(radius, angle: startAngle))
+                path.move(to: center.getPointFrom(radius: radius, angle: startAngle))
+                path.addArc(withCenter: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+                path.addLine(to: center.getPointFrom(radius: innerRadius, angle: endAngle))
+                path.addArc(withCenter: center, radius: innerRadius, startAngle: endAngle, endAngle: startAngle, clockwise: false)
+                path.addLine(to: center.getPointFrom(radius: radius, angle: startAngle))
                 path.lineWidth = self.segmentBorderWidth
                 
-                let size = CGSizeMake(width, height)
+                let size = CGSize(width: width, height: height)
                 UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
                 let ctx = UIGraphicsGetCurrentContext()
                 
-                CGContextAddPath(ctx, path.CGPath)
-                CGContextSetFillColorWithColor(ctx, colors[i].CGColor)
-                CGContextSetLineWidth(ctx, self.segmentBorderWidth)
-                CGContextSetStrokeColorWithColor(ctx, self.segmentBorderColor.CGColor)
-                CGContextDrawPath(ctx, .FillStroke)
+                ctx?.addPath(path.cgPath)
+                ctx?.setFillColor(colors[i].cgColor)
+                ctx?.setLineWidth(self.segmentBorderWidth)
+                ctx?.setStrokeColor(self.segmentBorderColor.cgColor)
+                ctx?.drawPath(using: .fillStroke)
                 
                 let image = UIGraphicsGetImageFromCurrentImageContext()
                 UIGraphicsEndImageContext()
                 
-                segmentLayer.contents = image.CGImage
+                segmentLayer.contents = image?.cgImage
                 
                 self._segmentLayers.append(segmentLayer)
                 startAngle = endAngle
@@ -138,34 +138,34 @@ public class KRPieChart: UIView {
         }
     }
     
-    public func displayChart() {
-        dispatch_async(self.drawingQueue) {
-            dispatch_async(dispatch_get_main_queue()) {
+    open func displayChart() {
+        self.drawingQueue.async {
+            DispatchQueue.main.async {
                 for segmentLayer in self._segmentLayers { self.layer.addSublayer(segmentLayer) }
             }
         }
     }
     
-    public func hideChart() {
-        dispatch_async(self.drawingQueue) {
-            dispatch_async(dispatch_get_main_queue()) {
-                for segmentLayer in self._segmentLayers { segmentLayer.hidden = true }
+    open func hideChart() {
+        self.drawingQueue.async {
+            DispatchQueue.main.async {
+                for segmentLayer in self._segmentLayers { segmentLayer.isHidden = true }
             }
         }
     }
     
-    public func removeChart() {
-        dispatch_async(self.drawingQueue) {
-            dispatch_async(dispatch_get_main_queue()) {
+    open func removeChart() {
+        self.drawingQueue.async {
+            DispatchQueue.main.async {
                 for segmentLayer in self._segmentLayers { segmentLayer.removeFromSuperlayer() }
             }
         }
     }
     
-    public func animateWithDuration(duration: Double, style: KRPieChartAnimationStyle, function: AnimationFunction = .EaseInOutCubic, completion: (() -> Void)?) {
-        dispatch_async(self.drawingQueue) {
+    open func animateWithDuration(_ duration: Double, style: KRPieChartAnimationStyle, function: AnimationFunction = .easeInOutCubic, completion: (() -> Void)?) {
+        self.drawingQueue.async {
             switch style {
-            case .SequentialCW, .SequentialCCW:
+            case .sequentialCW, .sequentialCCW:
                 var imageGraph: UIImage!
                 var values = [CGImage]()
                 let tempView = UIView(frame: self.bounds)
@@ -173,7 +173,7 @@ public class KRPieChart: UIView {
                 
                 UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
                 var ctx = UIGraphicsGetCurrentContext()
-                tempView.layer.renderInContext(ctx!)
+                tempView.layer.render(in: ctx!)
                 imageGraph = UIGraphicsGetImageFromCurrentImageContext()
                 UIGraphicsEndImageContext()
                 
@@ -182,35 +182,35 @@ public class KRPieChart: UIView {
                 
                 let numberOfFrames = CGFloat(60.0 * duration)
                 
-                let center = CGPointMake(self.bounds.midX, self.bounds.midY)
+                let center = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
                 let radius = (self.bounds.width - (self.insets.left + self.insets.right)) / 2.0
                 let startAngle = CGFloat(1.5 * M_PI)
-                let startPoint = CGPointMake(center.x, 0.0)
+                let startPoint = CGPoint(x: center.x, y: 0.0)
                 
                 for i in 0 ... Int(numberOfFrames) {
-                    CGContextSaveGState(ctx)
+                    ctx?.saveGState()
                     let relativeTime = getComputedTime(function, relativeTime: CGFloat(i) / numberOfFrames, duration: duration)
-                    let endAngle = style == .SequentialCW ? startAngle + relativeTime * CGFloat(M_PI * 2) : startAngle - relativeTime * CGFloat(M_PI * 2)
+                    let endAngle = style == .sequentialCW ? startAngle + relativeTime * CGFloat(M_PI * 2) : startAngle - relativeTime * CGFloat(M_PI * 2)
                     
                     let path = UIBezierPath()
-                    path.moveToPoint(startPoint)
-                    path.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: style == .SequentialCW)
-                    path.addLineToPoint(center)
-                    path.addLineToPoint(startPoint)
-                    path.closePath()
+                    path.move(to: startPoint)
+                    path.addArc(withCenter: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: style == .sequentialCW)
+                    path.addLine(to: center)
+                    path.addLine(to: startPoint)
+                    path.close()
                     
-                    CGContextAddPath(ctx, path.CGPath)
-                    CGContextClip(ctx)
-                    CGContextTranslateCTM(ctx, 0.0, self.bounds.height)
-                    CGContextScaleCTM(ctx, 1.0, -1.0)
-                    CGContextDrawImage(ctx, self.bounds, imageGraph.CGImage)
+                    ctx?.addPath(path.cgPath)
+                    ctx?.clip()
+                    ctx?.translateBy(x: 0.0, y: self.bounds.height)
+                    ctx?.scaleBy(x: 1.0, y: -1.0)
+                    ctx?.draw(imageGraph.cgImage!, in: self.bounds)
                     
-                    guard let animImage = UIGraphicsGetImageFromCurrentImageContext().CGImage else {
+                    guard let animImage = UIGraphicsGetImageFromCurrentImageContext()?.cgImage else {
                         print("Failed to get a image of pie chart. Check \(#file) \(#line)")
                         return
                     }
                     values.append(animImage)
-                    CGContextRestoreGState(ctx)
+                    ctx?.restoreGState()
                 }
                 
                 UIGraphicsEndImageContext()
@@ -219,17 +219,17 @@ public class KRPieChart: UIView {
                 anim.duration = duration
                 anim.values = values
                 anim.fillMode = kCAFillModeForwards
-                anim.removedOnCompletion = false
+                anim.isRemovedOnCompletion = false
                 
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     CATransaction.begin()
                     CATransaction.setCompletionBlock({
                         for segmentLayer in self._segmentLayers { self.layer.addSublayer(segmentLayer) }
-                        self.layer.removeAnimationForKey("contents")
+                        self.layer.removeAnimation(forKey: "contents")
                         completion?()
                     })
                     
-                    self.layer.addAnimation(anim, forKey: "contents")
+                    self.layer.add(anim, forKey: "contents")
                     
                     CATransaction.commit()
                 }
@@ -240,78 +240,78 @@ public class KRPieChart: UIView {
     }
 }
 
-private func getComputedTime(function: AnimationFunction, relativeTime: CGFloat, duration: Double) -> CGFloat {
+private func getComputedTime(_ function: AnimationFunction, relativeTime: CGFloat, duration: Double) -> CGFloat {
     switch function {
-    case .Linear:
+    case .linear:
         return CGFloat(TimingFunction.Linear(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseInQuad:
+    case .easeInQuad:
         return CGFloat(TimingFunction.EaseInQuad(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseOutQuad:
+    case .easeOutQuad:
         return CGFloat(TimingFunction.EaseOutQuad(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseInOutQuad:
+    case .easeInOutQuad:
         return CGFloat(TimingFunction.EaseInOutQuad(rt: Double(relativeTime), b: 0.0, c: 1.0))
         
-    case .EaseInCubic:
+    case .easeInCubic:
         return CGFloat(TimingFunction.EaseInCubic(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseOutCubic:
+    case .easeOutCubic:
         return CGFloat(TimingFunction.EaseOutCubic(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseInOutCubic:
+    case .easeInOutCubic:
         return CGFloat(TimingFunction.EaseInOutCubic(rt: Double(relativeTime), b: 0.0, c: 1.0))
         
-    case .EaseInQuart:
+    case .easeInQuart:
         return CGFloat(TimingFunction.EaseInQuart(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseOutQuart:
+    case .easeOutQuart:
         return CGFloat(TimingFunction.EaseOutQuart(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseInOutQuart:
+    case .easeInOutQuart:
         return CGFloat(TimingFunction.EaseInOutQuart(rt: Double(relativeTime), b: 0.0, c: 1.0))
         
-    case .EaseInQuint:
+    case .easeInQuint:
         return CGFloat(TimingFunction.EaseInQuint(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseOutQuint:
+    case .easeOutQuint:
         return CGFloat(TimingFunction.EaseOutQuint(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseInOutQuint:
+    case .easeInOutQuint:
         return CGFloat(TimingFunction.EaseInOutQuint(rt: Double(relativeTime), b: 0.0, c: 1.0))
         
-    case .EaseInSine:
+    case .easeInSine:
         return CGFloat(TimingFunction.EaseInSine(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseOutSine:
+    case .easeOutSine:
         return CGFloat(TimingFunction.EaseOutSine(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseInOutSine:
+    case .easeInOutSine:
         return CGFloat(TimingFunction.EaseInOutSine(rt: Double(relativeTime), b: 0.0, c: 1.0))
         
-    case .EaseInExpo:
+    case .easeInExpo:
         return CGFloat(TimingFunction.EaseInExpo(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseOutExpo:
+    case .easeOutExpo:
         return CGFloat(TimingFunction.EaseOutExpo(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseInOutExpo:
+    case .easeInOutExpo:
         return CGFloat(TimingFunction.EaseInOutExpo(rt: Double(relativeTime), b: 0.0, c: 1.0))
         
-    case .EaseInCirc:
+    case .easeInCirc:
         return CGFloat(TimingFunction.EaseInCirc(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseOutCirc:
+    case .easeOutCirc:
         return CGFloat(TimingFunction.EaseOutCirc(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseInOutCirc:
+    case .easeInOutCirc:
         return CGFloat(TimingFunction.EaseInOutCirc(rt: Double(relativeTime), b: 0.0, c: 1.0))
         
-    case .EaseInElastic:
+    case .easeInElastic:
         return CGFloat(TimingFunction.EaseInElastic(rt: Double(relativeTime), b: 0.0, c: 1.0, d: duration))
-    case .EaseOutElastic:
+    case .easeOutElastic:
         return CGFloat(TimingFunction.EaseOutElastic(rt: Double(relativeTime), b: 0.0, c: 1.0, d: duration))
-    case .EaseInOutElastic:
+    case .easeInOutElastic:
         return CGFloat(TimingFunction.EaseInOutElastic(rt: Double(relativeTime), b: 0.0, c: 1.0, d: duration))
         
-    case .EaseInBack:
+    case .easeInBack:
         return CGFloat(TimingFunction.EaseInBack(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseOutBack:
+    case .easeOutBack:
         return CGFloat(TimingFunction.EaseOutBack(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseInOutBack:
+    case .easeInOutBack:
         return CGFloat(TimingFunction.EaseInOutBack(rt: Double(relativeTime), b: 0.0, c: 1.0))
         
-    case .EaseInBounce:
+    case .easeInBounce:
         return CGFloat(TimingFunction.EaseInBounce(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseOutBounce:
+    case .easeOutBounce:
         return CGFloat(TimingFunction.EaseOutBounce(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .EaseInOutBounce:
+    case .easeInOutBounce:
         return CGFloat(TimingFunction.EaseInOutBounce(rt: Double(relativeTime), b: 0.0, c: 1.0))
     }
 }
