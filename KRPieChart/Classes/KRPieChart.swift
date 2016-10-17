@@ -185,9 +185,11 @@ open class KRPieChart: UIView {
                 let startAngle = CGFloat(1.5 * M_PI)
                 let startPoint = CGPoint(x: center.x, y: 0.0)
                 
+                UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
+                ctx = UIGraphicsGetCurrentContext()
+                
                 for i in 0 ... Int(numberOfFrames) {
-                    UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
-                    ctx = UIGraphicsGetCurrentContext()
+                    ctx?.saveGState()
                     
                     let relativeTime = getComputedTime(function, relativeTime: CGFloat(i) / numberOfFrames, duration: duration)
                     let endAngle = style == .sequentialCW ? startAngle + relativeTime * CGFloat(M_PI * 2) : startAngle - relativeTime * CGFloat(M_PI * 2)
@@ -209,7 +211,8 @@ open class KRPieChart: UIView {
                     }
 
                     values.append(animImage)
-                    UIGraphicsEndImageContext()
+                    ctx?.clear(self.bounds)
+                    ctx?.restoreGState()
                 }
                 
                 let anim = CAKeyframeAnimation(keyPath: "contents")
