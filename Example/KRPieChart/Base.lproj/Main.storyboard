@@ -27,18 +27,34 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xSc-2v-YgG">
-                                <state key="normal" title="Button"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="l2o-Za-6Ns"/>
+                                    <constraint firstAttribute="width" constant="44" id="o9b-CF-38U"/>
+                                </constraints>
+                                <state key="normal" title="Draw"/>
                                 <connections>
                                     <action selector="fillAction:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="01I-eH-xxJ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ubn-pD-yxY">
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="44" id="JRN-LA-G20"/>
+                                    <constraint firstAttribute="height" constant="44" id="fBT-5i-dby"/>
+                                </constraints>
+                                <state key="normal" title="Clear"/>
+                                <connections>
+                                    <action selector="clearAction:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="sd0-Rc-31T"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="xSc-2v-YgG" firstAttribute="top" secondItem="kzd-Vd-CVK" secondAttribute="bottom" constant="22" id="13F-Wr-mWf"/>
+                            <constraint firstItem="ubn-pD-yxY" firstAttribute="trailing" secondItem="kzd-Vd-CVK" secondAttribute="trailing" id="2NT-Cg-4Uu"/>
                             <constraint firstItem="kzd-Vd-CVK" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="7tk-2E-c9f"/>
+                            <constraint firstItem="ubn-pD-yxY" firstAttribute="top" secondItem="kzd-Vd-CVK" secondAttribute="bottom" constant="21.5" id="BWy-bB-LSE"/>
+                            <constraint firstItem="xSc-2v-YgG" firstAttribute="leading" secondItem="kzd-Vd-CVK" secondAttribute="leading" id="KOI-6n-gYB"/>
                             <constraint firstItem="kzd-Vd-CVK" firstAttribute="centerY" secondItem="kh9-bI-dsS" secondAttribute="centerY" id="Sbq-Kv-vJf"/>
-                            <constraint firstItem="xSc-2v-YgG" firstAttribute="centerX" secondItem="kzd-Vd-CVK" secondAttribute="centerX" id="Z4f-Dx-ZP8"/>
                         </constraints>
                     </view>
                     <connections>

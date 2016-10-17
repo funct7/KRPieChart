@@ -75,8 +75,8 @@ open class KRPieChart: UIView {
     open var segmentBorderColor = UIColor.clear
     open var segmentBorderWidth = CGFloat(0.0)
     
-    fileprivate var _segmentLayers: [CALayer]!
-    fileprivate let drawingQueue = DispatchQueue(label: "com.krpiechart.drawing_queue", attributes: [])
+    private var _segmentLayers: [CALayer]!
+    private let drawingQueue = DispatchQueue(label: "com.krpiechart.drawing_queue", attributes: [])
     
     open func setSegments(_ segments: [CGFloat], colors: [UIColor]) {
         self.drawingQueue.async {
@@ -175,10 +175,8 @@ open class KRPieChart: UIView {
                 var ctx = UIGraphicsGetCurrentContext()
                 tempView.layer.render(in: ctx!)
                 imageGraph = UIGraphicsGetImageFromCurrentImageContext()
+
                 UIGraphicsEndImageContext()
-                
-                UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
-                ctx = UIGraphicsGetCurrentContext()
                 
                 let numberOfFrames = CGFloat(60.0 * duration)
                 
@@ -188,7 +186,9 @@ open class KRPieChart: UIView {
                 let startPoint = CGPoint(x: center.x, y: 0.0)
                 
                 for i in 0 ... Int(numberOfFrames) {
-                    ctx?.saveGState()
+                    UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
+                    ctx = UIGraphicsGetCurrentContext()
+                    
                     let relativeTime = getComputedTime(function, relativeTime: CGFloat(i) / numberOfFrames, duration: duration)
                     let endAngle = style == .sequentialCW ? startAngle + relativeTime * CGFloat(M_PI * 2) : startAngle - relativeTime * CGFloat(M_PI * 2)
                     
@@ -201,19 +201,16 @@ open class KRPieChart: UIView {
                     
                     ctx?.addPath(path.cgPath)
                     ctx?.clip()
-                    ctx?.translateBy(x: 0.0, y: self.bounds.height)
-                    ctx?.scaleBy(x: 1.0, y: -1.0)
-                    ctx?.draw(imageGraph.cgImage!, in: self.bounds)
+                    imageGraph.draw(in: self.bounds)
                     
                     guard let animImage = UIGraphicsGetImageFromCurrentImageContext()?.cgImage else {
                         print("Failed to get a image of pie chart. Check \(#file) \(#line)")
                         return
                     }
+
                     values.append(animImage)
-                    ctx?.restoreGState()
+                    UIGraphicsEndImageContext()
                 }
-                
-                UIGraphicsEndImageContext()
                 
                 let anim = CAKeyframeAnimation(keyPath: "contents")
                 anim.duration = duration
@@ -236,8 +233,8 @@ open class KRPieChart: UIView {
             default: break
             }
         }
-        
     }
+    
 }
 
 private func getComputedTime(_ function: AnimationFunction, relativeTime: CGFloat, duration: Double) -> CGFloat {

@@ -30,4 +30,8 @@ class ViewController: UIViewController {
             print("Complete!")
         }
     }
+    
+    @IBAction func clearAction(_ sender: AnyObject) {
+        viewBox.hideChart()
+    }
 }
