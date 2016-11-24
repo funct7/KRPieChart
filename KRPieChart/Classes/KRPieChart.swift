@@ -22,50 +22,6 @@ public enum KRPieChartAnimationStyle {
     case simultaneousCCW
 }
 
-public enum AnimationFunction {
-    case linear
-    
-    case easeInSine
-    case easeOutSine
-    case easeInOutSine
-    
-    case easeInQuad
-    case easeOutQuad
-    case easeInOutQuad
-    
-    case easeInCubic
-    case easeOutCubic
-    case easeInOutCubic
-    
-    case easeInQuart
-    case easeOutQuart
-    case easeInOutQuart
-    
-    case easeInQuint
-    case easeOutQuint
-    case easeInOutQuint
-    
-    case easeInExpo
-    case easeOutExpo
-    case easeInOutExpo
-    
-    case easeInCirc
-    case easeOutCirc
-    case easeInOutCirc
-    
-    case easeInBack
-    case easeOutBack
-    case easeInOutBack
-    
-    case easeInElastic
-    case easeOutElastic
-    case easeInOutElastic
-    
-    case easeInBounce
-    case easeOutBounce
-    case easeInOutBounce
-}
-
 private let LAYER_ID_SEGMENT = "KRPieSegment"
 
 open class KRPieChart: UIView {
@@ -162,7 +118,7 @@ open class KRPieChart: UIView {
         }
     }
     
-    open func animateWithDuration(_ duration: Double, style: KRPieChartAnimationStyle, function: AnimationFunction = .easeInOutCubic, completion: (() -> Void)?) {
+    open func animateWithDuration(_ duration: Double, style: KRPieChartAnimationStyle, function: FunctionType = .easeInOutCubic, completion: (() -> Void)?) {
         self.drawingQueue.async {
             switch style {
             case .sequentialCW, .sequentialCCW:
@@ -191,8 +147,8 @@ open class KRPieChart: UIView {
                 for i in 0 ... Int(numberOfFrames) {
                     ctx?.saveGState()
                     
-                    let relativeTime = getComputedTime(function, relativeTime: CGFloat(i) / numberOfFrames, duration: duration)
-                    let endAngle = style == .sequentialCW ? startAngle + relativeTime * CGFloat(M_PI * 2) : startAngle - relativeTime * CGFloat(M_PI * 2)
+                    let relativeTime = TimingFunction.value(using: function, rt: CGFloat(i) / numberOfFrames, b: 0.0, c: 1.0, d: CGFloat(duration))
+                    let endAngle = style == .sequentialCW ? startAngle + relativeTime * (CGFloat.pi * 2) : startAngle - relativeTime * CGFloat(M_PI * 2)
                     
                     let path = UIBezierPath()
                     path.move(to: startPoint)
@@ -236,82 +192,5 @@ open class KRPieChart: UIView {
             default: break
             }
         }
-    }
-    
-}
-
-private func getComputedTime(_ function: AnimationFunction, relativeTime: CGFloat, duration: Double) -> CGFloat {
-    switch function {
-    case .linear:
-        return CGFloat(TimingFunction.Linear(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeInQuad:
-        return CGFloat(TimingFunction.EaseInQuad(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeOutQuad:
-        return CGFloat(TimingFunction.EaseOutQuad(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeInOutQuad:
-        return CGFloat(TimingFunction.EaseInOutQuad(rt: Double(relativeTime), b: 0.0, c: 1.0))
-        
-    case .easeInCubic:
-        return CGFloat(TimingFunction.EaseInCubic(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeOutCubic:
-        return CGFloat(TimingFunction.EaseOutCubic(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeInOutCubic:
-        return CGFloat(TimingFunction.EaseInOutCubic(rt: Double(relativeTime), b: 0.0, c: 1.0))
-        
-    case .easeInQuart:
-        return CGFloat(TimingFunction.EaseInQuart(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeOutQuart:
-        return CGFloat(TimingFunction.EaseOutQuart(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeInOutQuart:
-        return CGFloat(TimingFunction.EaseInOutQuart(rt: Double(relativeTime), b: 0.0, c: 1.0))
-        
-    case .easeInQuint:
-        return CGFloat(TimingFunction.EaseInQuint(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeOutQuint:
-        return CGFloat(TimingFunction.EaseOutQuint(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeInOutQuint:
-        return CGFloat(TimingFunction.EaseInOutQuint(rt: Double(relativeTime), b: 0.0, c: 1.0))
-        
-    case .easeInSine:
-        return CGFloat(TimingFunction.EaseInSine(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeOutSine:
-        return CGFloat(TimingFunction.EaseOutSine(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeInOutSine:
-        return CGFloat(TimingFunction.EaseInOutSine(rt: Double(relativeTime), b: 0.0, c: 1.0))
-        
-    case .easeInExpo:
-        return CGFloat(TimingFunction.EaseInExpo(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeOutExpo:
-        return CGFloat(TimingFunction.EaseOutExpo(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeInOutExpo:
-        return CGFloat(TimingFunction.EaseInOutExpo(rt: Double(relativeTime), b: 0.0, c: 1.0))
-        
-    case .easeInCirc:
-        return CGFloat(TimingFunction.EaseInCirc(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeOutCirc:
-        return CGFloat(TimingFunction.EaseOutCirc(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeInOutCirc:
-        return CGFloat(TimingFunction.EaseInOutCirc(rt: Double(relativeTime), b: 0.0, c: 1.0))
-        
-    case .easeInElastic:
-        return CGFloat(TimingFunction.EaseInElastic(rt: Double(relativeTime), b: 0.0, c: 1.0, d: duration))
-    case .easeOutElastic:
-        return CGFloat(TimingFunction.EaseOutElastic(rt: Double(relativeTime), b: 0.0, c: 1.0, d: duration))
-    case .easeInOutElastic:
-        return CGFloat(TimingFunction.EaseInOutElastic(rt: Double(relativeTime), b: 0.0, c: 1.0, d: duration))
-        
-    case .easeInBack:
-        return CGFloat(TimingFunction.EaseInBack(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeOutBack:
-        return CGFloat(TimingFunction.EaseOutBack(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeInOutBack:
-        return CGFloat(TimingFunction.EaseInOutBack(rt: Double(relativeTime), b: 0.0, c: 1.0))
-        
-    case .easeInBounce:
-        return CGFloat(TimingFunction.EaseInBounce(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeOutBounce:
-        return CGFloat(TimingFunction.EaseOutBounce(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    case .easeInOutBounce:
-        return CGFloat(TimingFunction.EaseInOutBounce(rt: Double(relativeTime), b: 0.0, c: 1.0))
-    }
+    }    
 }
