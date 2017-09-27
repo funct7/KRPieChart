@@ -34,7 +34,7 @@ open class KRPieChart: UIView {
     open var segmentBorderColor = UIColor.clear
     open var segmentBorderWidth = CGFloat(0.0)
     
-    private(set) var segmentLayers = [CALayer]()
+    public private(set) var segmentLayers = [CALayer]()
     
     private let drawingQueue = DispatchQueue(label: "com.krpiechart.drawing_queue", attributes: [])
     private var isDrawing = false
@@ -45,16 +45,18 @@ open class KRPieChart: UIView {
         assert(segments.count == colors.count, "The number of elements in `segments` and `colors` must be the same.")
         assert(round(segments.reduce(CGFloat(0.0), +)*10.0) / 10.0 == CGFloat(1.0), "The sum of elements in `segments` must be 1.0: \(segments.reduce(CGFloat(0.0), +))")
         
-        self.isDrawing = true
-        
         if let sublayers = self.layer.sublayers {
-            for layer in sublayers { if layer.name == KRPieChart.layerID { layer.removeFromSuperlayer() } }
+            for layer in sublayers {
+                if layer.name == KRPieChart.layerID { layer.removeFromSuperlayer() }
+            }
         }
         
         let width = self.bounds.width - (self.insets.left + self.insets.right)
         let height = self.bounds.height - (self.insets.top + self.insets.bottom)
         
         self.drawingQueue.async {
+            self.isDrawing = true
+            
             assert(width == height, "Width and height don't match.\n1. Check bounds: \(self.bounds).\n2. Check insets: \(self.insets).\n3. Ensure that `bounds.width - (horizontal insets)` == `bounds.height - (vertical insets)`")
             
             let frame = CGRect(x: self.insets.left, y: self.insets.top, width: width, height: height)
@@ -200,9 +202,7 @@ open class KRPieChart: UIView {
         }
     }
     
-    // MARK: - Private
-    
-    private func callWhenSafe(_ block: @escaping () -> Void) {
+    public func callWhenSafe(_ block: @escaping () -> Void) {
         if self.isDrawing {
             self.drawingQueue.async {
                 DispatchQueue.main.async { block() }
@@ -210,8 +210,10 @@ open class KRPieChart: UIView {
         } else {
             DispatchQueue.main.async { block() }
         }
-
+        
     }
+    
+    // MARK: - Private
     
     private func removeAnimation() {
         self.layer.removeAnimation(forKey: KRPieChart.animationKey)
