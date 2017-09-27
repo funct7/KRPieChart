@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'KRPieChart'
-  s.version          = '0.4.3'
+  s.version          = '0.5.0'
   s.summary          = 'KRPieChart is a light-weight pie chart library.'
 
 # This description is used to generate tags and improve search results.
@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
-  s.dependency 'KRTimingFunction'
+  s.dependency 'KRTimingFunction', '1.0.0'
   s.source_files = 'KRPieChart/Classes/**/*'
 
   # s.resource_bundles = {
