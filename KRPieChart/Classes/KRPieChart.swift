@@ -15,31 +15,40 @@ extension CGPoint {
     }
 }
 
-public enum KRPieChartAnimationStyle {
-    case sequentialCW
-    case sequentialCCW
-    case simultaneousCW
-    case simultaneousCCW
-}
-
-private let LAYER_ID_SEGMENT = "KRPieSegment"
-
 open class KRPieChart: UIView {
+    
+    public enum AnimationStyle {
+        case sequentialCW
+        case sequentialCCW
+        // TODO: Implement
+        //    case simultaneousCW
+        //    case simultaneousCCW
+    }
+    
+    private static let animationKey = "contents"
+    private static let layerID = "com.krpiechart.pie_segment"
+    
     open var innerRadius: CGFloat = 0.0
     
     open var insets = UIEdgeInsets.zero
     open var segmentBorderColor = UIColor.clear
     open var segmentBorderWidth = CGFloat(0.0)
     
-    private var _segmentLayers: [CALayer]!
+    private(set) var segmentLayers = [CALayer]()
+    
     private let drawingQueue = DispatchQueue(label: "com.krpiechart.drawing_queue", attributes: [])
+    private var isDrawing = false
+    
+    // MARK: - Interface
     
     open func setSegments(_ segments: [CGFloat], colors: [UIColor]) {
         assert(segments.count == colors.count, "The number of elements in `segments` and `colors` must be the same.")
         assert(round(segments.reduce(CGFloat(0.0), +)*10.0) / 10.0 == CGFloat(1.0), "The sum of elements in `segments` must be 1.0: \(segments.reduce(CGFloat(0.0), +))")
         
+        self.isDrawing = true
+        
         if let sublayers = self.layer.sublayers {
-            for layer in sublayers { if layer.name == LAYER_ID_SEGMENT { layer.removeFromSuperlayer() } }
+            for layer in sublayers { if layer.name == KRPieChart.layerID { layer.removeFromSuperlayer() } }
         }
         
         let width = self.bounds.width - (self.insets.left + self.insets.right)
@@ -54,7 +63,7 @@ open class KRPieChart: UIView {
             
             assert(radius > innerRadius, "Inner radius (\(innerRadius)) cannot be bigger than the outer radius (\(radius)).")
             
-            self._segmentLayers = [CALayer]()
+            self.segmentLayers.removeAll()
             
             let center = CGPoint(x: frame.midX, y: frame.midY)
             var startAngle = 1.5 * CGFloat.pi
@@ -62,7 +71,7 @@ open class KRPieChart: UIView {
             for i in 0 ..< segments.count {
                 let segmentLayer = CALayer()
                 segmentLayer.frame = frame
-                segmentLayer.name = LAYER_ID_SEGMENT
+                segmentLayer.name = KRPieChart.layerID
                 
                 let endAngle = startAngle + segments[i] * CGFloat.pi * 2
                 let path = UIBezierPath()
@@ -88,44 +97,43 @@ open class KRPieChart: UIView {
                 
                 segmentLayer.contents = image?.cgImage
                 
-                self._segmentLayers.append(segmentLayer)
+                self.segmentLayers.append(segmentLayer)
                 startAngle = endAngle
             }
+            
+            self.isDrawing = false
         }
     }
     
     open func displayChart() {
-        self.drawingQueue.async {
-            DispatchQueue.main.async {
-                for segmentLayer in self._segmentLayers { self.layer.addSublayer(segmentLayer) }
-            }
+        self.callWhenSafe {
+            for segmentLayer in self.segmentLayers { self.layer.addSublayer(segmentLayer) }
+            self.removeAnimation()
         }
     }
     
     open func hideChart() {
-        self.drawingQueue.async {
-            DispatchQueue.main.async {
-                for segmentLayer in self._segmentLayers { segmentLayer.isHidden = true }
-            }
+        self.callWhenSafe {
+            self.removeAnimation()
+            for segmentLayer in self.segmentLayers { segmentLayer.isHidden = true }
         }
     }
     
     open func removeChart() {
-        self.drawingQueue.async {
-            DispatchQueue.main.async {
-                for segmentLayer in self._segmentLayers { segmentLayer.removeFromSuperlayer() }
-            }
+        self.callWhenSafe {
+            self.removeAnimation()
+            for segmentLayer in self.segmentLayers { segmentLayer.removeFromSuperlayer() }
         }
     }
     
-    open func animateWithDuration(_ duration: Double, style: KRPieChartAnimationStyle, function: FunctionType = .easeInOutCubic, completion: (() -> Void)?) {
+    open func animateWithDuration(_ duration: Double, style: AnimationStyle, function: FunctionType = .easeInOutCubic, completion: (() -> Void)?) {
         self.drawingQueue.async {
             switch style {
             case .sequentialCW, .sequentialCCW:
                 var imageGraph: UIImage!
                 var values = [CGImage]()
                 let tempView = UIView(frame: self.bounds)
-                for sublayer in self._segmentLayers { tempView.layer.addSublayer(sublayer) }
+                for sublayer in self.segmentLayers { tempView.layer.addSublayer(sublayer) }
                 
                 UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
                 var ctx = UIGraphicsGetCurrentContext()
@@ -171,7 +179,7 @@ open class KRPieChart: UIView {
                     ctx?.restoreGState()
                 }
                 
-                let anim = CAKeyframeAnimation(keyPath: "contents")
+                let anim = CAKeyframeAnimation(keyPath: KRPieChart.animationKey)
                 anim.duration = duration
                 anim.values = values
                 anim.fillMode = kCAFillModeForwards
@@ -180,17 +188,33 @@ open class KRPieChart: UIView {
                 DispatchQueue.main.async {
                     CATransaction.begin()
                     CATransaction.setCompletionBlock({
-                        for segmentLayer in self._segmentLayers { self.layer.addSublayer(segmentLayer) }
-                        self.layer.removeAnimation(forKey: "contents")
+                        self.displayChart()
                         completion?()
                     })
                     
-                    self.layer.add(anim, forKey: "contents")
+                    self.layer.add(anim, forKey: KRPieChart.animationKey)
                     
                     CATransaction.commit()
                 }
-            default: break
             }
         }
-    }    
+    }
+    
+    // MARK: - Private
+    
+    private func callWhenSafe(_ block: @escaping () -> Void) {
+        if self.isDrawing {
+            self.drawingQueue.async {
+                DispatchQueue.main.async { block() }
+            }
+        } else {
+            DispatchQueue.main.async { block() }
+        }
+
+    }
+    
+    private func removeAnimation() {
+        self.layer.removeAnimation(forKey: KRPieChart.animationKey)
+    }
+    
 }
