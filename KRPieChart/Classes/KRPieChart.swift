@@ -41,9 +41,13 @@ open class KRPieChart: UIView {
     
     // MARK: - Interface
     
-    open func setSegments(_ segments: [CGFloat], colors: [UIColor]) {
-        assert(segments.count == colors.count, "The number of elements in `segments` and `colors` must be the same.")
-        assert(round(segments.reduce(CGFloat(0.0), +)*10.0) / 10.0 == CGFloat(1.0), "The sum of elements in `segments` must be 1.0: \(segments.reduce(CGFloat(0.0), +))")
+    open func setSegments(_ segments: [CGFloat],
+                          colors: [UIColor])
+    {
+        assert(segments.count == colors.count,
+               "The number of elements in `segments` and `colors` must be the same.")
+        assert(round(segments.reduce(CGFloat(0.0), +)*10.0) / 10.0 == CGFloat(1.0),
+               "The sum of elements in `segments` must be 1.0: \(segments.reduce(CGFloat(0.0), +))")
         
         if let sublayers = self.layer.sublayers {
             for layer in sublayers {
@@ -51,21 +55,34 @@ open class KRPieChart: UIView {
             }
         }
         
+        let bounds = self.bounds
         let width = self.bounds.width - (self.insets.left + self.insets.right)
         let height = self.bounds.height - (self.insets.top + self.insets.bottom)
         
-        self.drawingQueue.async {
-            self.isDrawing = true
+        self.drawingQueue.async { [weak self] in
+            guard let weakSelf = self else { return }
             
-            assert(width == height, "Width and height don't match.\n1. Check bounds: \(self.bounds).\n2. Check insets: \(self.insets).\n3. Ensure that `bounds.width - (horizontal insets)` == `bounds.height - (vertical insets)`")
+            weakSelf.isDrawing = true
             
-            let frame = CGRect(x: self.insets.left, y: self.insets.top, width: width, height: height)
-            let radius = width / 2.0 - (self.segmentBorderWidth / 2.0)
-            let innerRadius = self.innerRadius + (self.segmentBorderWidth / 2.0)
+            assert(width == height,
+                   """
+                Width and height don't match.
+                1. Check bounds: \(bounds).
+                2. Check insets: \(weakSelf.insets).
+                3. Ensure that `bounds.width - (horizontal insets)` == `bounds.height - (vertical insets)`
+                """)
             
-            assert(radius > innerRadius, "Inner radius (\(innerRadius)) cannot be bigger than the outer radius (\(radius)).")
+            let frame = CGRect(x: weakSelf.insets.left,
+                               y: weakSelf.insets.top,
+                               width: width,
+                               height: height)
+            let radius = width * 0.5 - (weakSelf.segmentBorderWidth * 0.5)
+            let innerRadius = weakSelf.innerRadius + (weakSelf.segmentBorderWidth * 0.5)
             
-            self.segmentLayers.removeAll()
+            assert(radius > innerRadius,
+                   "Inner radius (\(innerRadius)) cannot be bigger than the outer radius (\(radius)).")
+            
+            weakSelf.segmentLayers.removeAll()
             
             let center = CGPoint(x: frame.midX, y: frame.midY)
             var startAngle = 1.5 * CGFloat.pi
@@ -82,7 +99,7 @@ open class KRPieChart: UIView {
                 path.addLine(to: center.getPointFrom(radius: innerRadius, angle: endAngle))
                 path.addArc(withCenter: center, radius: innerRadius, startAngle: endAngle, endAngle: startAngle, clockwise: false)
                 path.addLine(to: center.getPointFrom(radius: radius, angle: startAngle))
-                path.lineWidth = self.segmentBorderWidth
+                path.lineWidth = weakSelf.segmentBorderWidth
                 
                 let size = CGSize(width: width, height: height)
                 UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
@@ -90,8 +107,8 @@ open class KRPieChart: UIView {
                 
                 ctx?.addPath(path.cgPath)
                 ctx?.setFillColor(colors[i].cgColor)
-                ctx?.setLineWidth(self.segmentBorderWidth)
-                ctx?.setStrokeColor(self.segmentBorderColor.cgColor)
+                ctx?.setLineWidth(weakSelf.segmentBorderWidth)
+                ctx?.setStrokeColor(weakSelf.segmentBorderColor.cgColor)
                 ctx?.drawPath(using: .fillStroke)
                 
                 let image = UIGraphicsGetImageFromCurrentImageContext()
@@ -99,11 +116,11 @@ open class KRPieChart: UIView {
                 
                 segmentLayer.contents = image?.cgImage
                 
-                self.segmentLayers.append(segmentLayer)
+                weakSelf.segmentLayers.append(segmentLayer)
                 startAngle = endAngle
             }
             
-            self.isDrawing = false
+            weakSelf.isDrawing = false
         }
     }
     
@@ -128,16 +145,25 @@ open class KRPieChart: UIView {
         }
     }
     
-    open func animateWithDuration(_ duration: Double, style: AnimationStyle, function: FunctionType = .easeInOutCubic, completion: (() -> Void)?) {
-        self.drawingQueue.async {
+    open func animateWithDuration(_ duration: Double,
+                                  style: AnimationStyle,
+                                  function: FunctionType = .easeInOutCubic,
+                                  completion: (() -> Void)?)
+    {
+        
+        let bounds = self.bounds
+        
+        self.drawingQueue.async { [weak self] in
+            guard let weakSelf = self else { return }
+            
             switch style {
             case .sequentialCW, .sequentialCCW:
                 var imageGraph: UIImage!
                 var values = [CGImage]()
-                let tempView = UIView(frame: self.bounds)
-                for sublayer in self.segmentLayers { tempView.layer.addSublayer(sublayer) }
+                let tempView = UIView(frame: bounds)
+                for sublayer in weakSelf.segmentLayers { tempView.layer.addSublayer(sublayer) }
                 
-                UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
+                UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0.0)
                 var ctx = UIGraphicsGetCurrentContext()
                 tempView.layer.render(in: ctx!)
                 imageGraph = UIGraphicsGetImageFromCurrentImageContext()
@@ -146,19 +172,26 @@ open class KRPieChart: UIView {
                 
                 let numberOfFrames = CGFloat(60.0 * duration)
                 
-                let center = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
-                let radius = (self.bounds.width - (self.insets.left + self.insets.right)) / 2.0
+                let center = CGPoint(x: bounds.midX,
+                                     y: bounds.midY)
+                let radius = (bounds.width - (weakSelf.insets.left + weakSelf.insets.right)) * 0.5
                 let startAngle = 1.5 * CGFloat.pi
                 let startPoint = CGPoint(x: center.x, y: 0.0)
                 
-                UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
+                UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0.0)
                 ctx = UIGraphicsGetCurrentContext()
                 
                 for i in 0 ... Int(numberOfFrames) {
                     ctx?.saveGState()
                     
-                    let relativeTime = TimingFunction.value(using: function, rt: CGFloat(i) / numberOfFrames, b: 0.0, c: 1.0, d: CGFloat(duration))
-                    let endAngle = style == .sequentialCW ? startAngle + relativeTime * (CGFloat.pi * 2) : startAngle - relativeTime * (CGFloat.pi * 2)
+                    let relativeTime = TimingFunction.value(using: function,
+                                                            rt: CGFloat(i) / numberOfFrames,
+                                                            b: 0.0,
+                                                            c: 1.0,
+                                                            d: CGFloat(duration))
+                    let endAngle = style == .sequentialCW ?
+                        startAngle + relativeTime * (CGFloat.pi * 2) :
+                        startAngle - relativeTime * (CGFloat.pi * 2)
                     
                     let path = UIBezierPath()
                     path.move(to: startPoint)
@@ -169,7 +202,7 @@ open class KRPieChart: UIView {
                     
                     ctx?.addPath(path.cgPath)
                     ctx?.clip()
-                    imageGraph.draw(in: self.bounds)
+                    imageGraph.draw(in: bounds)
                     
                     guard let animImage = UIGraphicsGetImageFromCurrentImageContext()?.cgImage else {
                         print("Failed to get a image of pie chart. Check \(#file) \(#line)")
@@ -177,7 +210,7 @@ open class KRPieChart: UIView {
                     }
 
                     values.append(animImage)
-                    ctx?.clear(self.bounds)
+                    ctx?.clear(bounds)
                     ctx?.restoreGState()
                 }
                 
@@ -187,14 +220,16 @@ open class KRPieChart: UIView {
                 anim.fillMode = kCAFillModeForwards
                 anim.isRemovedOnCompletion = false
                 
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak weakSelf] in
+                    guard let weakSelf = weakSelf else { return }
+                    
                     CATransaction.begin()
                     CATransaction.setCompletionBlock({
-                        self.displayChart()
+                        weakSelf.displayChart()
                         completion?()
                     })
                     
-                    self.layer.add(anim, forKey: KRPieChart.animationKey)
+                    weakSelf.layer.add(anim, forKey: KRPieChart.animationKey)
                     
                     CATransaction.commit()
                 }
