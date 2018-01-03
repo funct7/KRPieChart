@@ -36,7 +36,8 @@ open class KRPieChart: UIView {
     
     public private(set) var segmentLayers = [CALayer]()
     
-    private let drawingQueue = DispatchQueue(label: "com.krpiechart.drawing_queue", attributes: [])
+    private let drawingQueue = DispatchQueue(label: "com.krpiechart.drawing_queue",
+                                             attributes: [])
     private var isDrawing = false
     
     // MARK: - Interface
@@ -59,10 +60,10 @@ open class KRPieChart: UIView {
         let width = self.bounds.width - (self.insets.left + self.insets.right)
         let height = self.bounds.height - (self.insets.top + self.insets.bottom)
         
+        self.isDrawing = true
+        
         self.drawingQueue.async { [weak self] in
             guard let weakSelf = self else { return }
-            
-            weakSelf.isDrawing = true
             
             assert(width == height,
                    """
